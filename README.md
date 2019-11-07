@@ -1,2 +1,3 @@
-# TAR-Backend
-Django backend para TAR
+# Android apps
+
+Android test apps
