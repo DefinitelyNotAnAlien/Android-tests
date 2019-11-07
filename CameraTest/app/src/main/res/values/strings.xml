@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CameraTest</string>
+    <string name="take_photo">Tomar foto</string>
+    <string name="switch_camera">Cambiar cámara</string>
+</resources>
