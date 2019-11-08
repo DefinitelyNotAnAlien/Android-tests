@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp">
+        android:layout_marginBottom="15dp">
 
         <ImageButton
             android:id="@+id/takePhoto"
@@ -49,11 +49,11 @@
             android:id="@+id/switchCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/round_corner"
+            android:background="@drawable/ic_switch_camera_outline_36dp"
             android:contentDescription="@string/switch_camera"
-            android:padding="5dp"
-            android:src="@drawable/ic_switch_camera_black_36dp"
-            android:visibility="invisible"
+            android:padding="1dp"
+            android:src="@drawable/ic_switch_camera_36dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/takePhoto"

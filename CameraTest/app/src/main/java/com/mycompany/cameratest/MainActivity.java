@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private void restartCamera() {
         if (mCamera != null) return;
         Log.d(TAG, String.format("Restarting camera #%d", currentCamera));
-        mCamera.open(currentCamera);
+        mCamera = Camera.open(currentCamera);
         mCamera.startPreview();
     }
 
@@ -111,5 +111,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        restartCamera();
     }
 }
