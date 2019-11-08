@@ -48,9 +48,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         mPreview.setCamera(mCamera);
-
     }
 
     private void getCameras() {
@@ -79,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
     private void restartCamera() {
         if (mCamera != null) return;
         Log.d(TAG, String.format("Restarting camera #%d", currentCamera));
+        // Restart and set the camera in in the surface view
         mCamera = Camera.open(currentCamera);
-        mCamera.startPreview();
+        mPreview.setCamera(mCamera);
     }
 
     private void switchCamera() {
@@ -105,6 +104,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         releaseCamera();
     }
 
