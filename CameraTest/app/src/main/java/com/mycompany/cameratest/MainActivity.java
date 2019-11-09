@@ -1,8 +1,11 @@
 package com.mycompany.cameratest;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +25,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    200);
+        }
 
         mPreview = findViewById(R.id.cameraPreview);
 
@@ -94,11 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setFullscreen() {
         // hide the app title bar and the Android status bar
-        ActionBar supportBar;
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        supportBar = getSupportActionBar();
-        if (supportBar != null) supportBar.hide();
     }
 
     @Override
