@@ -54,9 +54,10 @@
             android:contentDescription="@string/switch_camera"
             android:padding="1dp"
             android:src="@drawable/ic_switch_camera_36dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.67"
             app:layout_constraintStart_toEndOf="@+id/takePhoto"
             app:layout_constraintTop_toTopOf="parent" />
 
