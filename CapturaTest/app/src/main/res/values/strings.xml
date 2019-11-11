@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Captura de bitácora</string>
+    <string name="aircraft_label">Aeronave</string>
+    <string name="ok_button">Aceptar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="log_item_label">Ítem #</string>
+    <string name="folio_input_label">Folio #</string>
+    <string name="discrepancy_label">Discrepancia</string>
+    <string name="corr_action_label">Acción Correctiva</string>
+    <string name="log_folio_hint">Folio de bitácora</string>
+</resources>
