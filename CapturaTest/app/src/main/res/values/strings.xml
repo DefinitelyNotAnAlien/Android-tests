@@ -1,11 +1,25 @@
 <resources>
     <string name="app_name">Captura de bitácora</string>
     <string name="aircraft_label">Aeronave</string>
+    <string name="selector_title">Seleccionar aeronave</string>
     <string name="ok_button">Aceptar</string>
     <string name="cancel_button">Cancelar</string>
     <string name="log_item_label">Item #</string>
     <string name="folio_input_label">Folio #</string>
     <string name="discrepancy_label">Discrepancia</string>
-    <string name="corr_action_label">Acción Correctiva</string>
+    <string name="corr_action_label">Acción Corr.</string>
     <string name="log_folio_hint">Folio de bitácora</string>
+    <string-array name="aircraft_array">
+        <item>XA-AFH</item>
+        <item>XA-BPK</item>
+        <item>XA-EFH</item>
+        <item>XA-IFP</item>
+        <item>XA-JFH</item>
+        <item>XA-MAF</item>
+        <item>XA-MFH</item>
+        <item>XA-NFP</item>
+        <item>XA-PFL</item>
+        <item>XA-RHF</item>
+        <item>XA-SFH</item>
+    </string-array>
 </resources>
