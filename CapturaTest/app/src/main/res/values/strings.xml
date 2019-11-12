@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Captura de bitácora</string>
+    <string name="app_name">Captura de bitácoras</string>
     <string name="aircraft_label">Aeronave</string>
-    <string name="selector_title">Seleccionar aeronave</string>
+    <string name="selector_title">Matricula del aeronave</string>
     <string name="ok_button">Aceptar</string>
     <string name="cancel_button">Cancelar</string>
     <string name="log_item_label">Item #</string>
