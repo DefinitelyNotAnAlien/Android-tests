@@ -9,6 +9,7 @@
     <string name="discrepancy_label">Discrepancia</string>
     <string name="corr_action_label">Acción Corr.</string>
     <string name="log_folio_hint">Folio de bitácora</string>
+    <string name="blank_item">En blanco</string>
     <string-array name="aircraft_array">
         <item>XA-AFH</item>
         <item>XA-BPK</item>
