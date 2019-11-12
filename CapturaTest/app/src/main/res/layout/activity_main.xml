@@ -59,17 +59,18 @@
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/folioInput"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
                 android:layout_weight="1"
-                android:digits="5"
+                android:autofillHints="@string/log_folio_hint"
                 android:ems="10"
                 android:hint="@string/log_folio_hint"
                 android:inputType="number"
-                android:autofillHints="@string/log_folio_hint"
+                android:maxLength="5"
                 tools:ignore="UnusedAttribute" />
         </TableRow>
     </TableLayout>
