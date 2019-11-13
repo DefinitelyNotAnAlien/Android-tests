@@ -1,6 +1,12 @@
 package com.mycompany.capturatest;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class LogItem {
     /* Object representing an entry in a maintenance log
@@ -50,6 +56,13 @@ public class LogItem {
         private Employee reportedBy;
         private String description;
         private boolean canceled;
+        final String nullJSONString = "null";
+        final String stationJSON = "station";
+        final String ataJSON = "ataChapter";
+        final String dateReportedJSON = "date";
+        final String reportedByJSON = "reportedBy";
+        final String descriptionJSON = "description";
+        final String canceledJSON = "canceled";
 
         BaseLogItem() {
             reportedBy = new Employee();
@@ -92,31 +105,48 @@ public class LogItem {
             this.description = description;
         }
 
-        public boolean isCanceled() {
+        boolean isCanceled() {
             return canceled;
         }
 
         public void setCanceled(boolean cancel) {
             canceled = cancel;
         }
+
+        public JSONObject toJSON() {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                if (!canceled) {
+                    jsonObject.put(stationJSON, station);
+                    jsonObject.put(ataJSON, ataChapter != null ? ataChapter : nullJSONString);
+
+                    // Convert date to a string
+                    String pattern = "dd/MM/yyyy";
+                    DateFormat df = new SimpleDateFormat(pattern,
+                                                         new Locale("es", "mx"));
+                    String dateString = df.format(dateReported);
+                    jsonObject.put(dateReportedJSON, dateString);
+
+                    jsonObject.put(reportedByJSON, reportedBy.toJSON());
+                    jsonObject.put(descriptionJSON, description);
+                } else {
+                    jsonObject.put(canceledJSON, canceled);
+                }
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+            return jsonObject;
+        }
     }
 
     private class Discrepancy extends BaseLogItem {
-        private boolean crewReport;
         private String flightNumber;
         private String operationLog;
+        final String flightNumberJSON = "flightNumber";
+        final String operationLogJSON = "operationLog";
 
         Discrepancy() {
             super();
-            crewReport = false;
-        }
-
-        public boolean isCrewReport() {
-            return crewReport;
-        }
-
-        public void setCrewReport(boolean crewReport) {
-            this.crewReport = crewReport;
         }
 
         public String getFlightNumber() {
@@ -134,11 +164,28 @@ public class LogItem {
         public void setOperationLog(String operationLog) {
             this.operationLog = operationLog;
         }
+
+        @Override
+        public JSONObject toJSON() {
+            JSONObject jsonObject = super.toJSON();
+            if (!isCanceled()) {
+                // If it's not canceled add the extra parameters
+                try {
+                    jsonObject.put(flightNumberJSON, flightNumber != null ? flightNumber : nullJSONString);
+                    jsonObject.put(operationLogJSON, operationLog != null ? operationLog : nullJSONString);
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+            } // If it's canceled there's no point in adding anything else
+            return jsonObject;
+        }
     }
 
     private class CorrectiveAction extends BaseLogItem {
         private boolean deferred;
         private String deferralBasis;
+        final String deferredJSON = "deferred";
+        final String deferralBasisJSON = "deferralBasis";
 
         CorrectiveAction() {
             super();
@@ -152,28 +199,74 @@ public class LogItem {
         public void setDeferred(boolean deferred) {
             this.deferred = deferred;
         }
+
+        @Override
+        public JSONObject toJSON() {
+            JSONObject jsonObject = super.toJSON();
+            if (!isCanceled()) {
+                // If it's not canceled add the extra parameters
+                try {
+                    jsonObject.put(deferredJSON, deferred);
+                    if (deferred)
+                        jsonObject.put(deferralBasisJSON, deferralBasis);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } // If it's canceled there's no point in adding anything else
+            return jsonObject;
+        }
     }
 
     protected class Employee {
         private String employeeName;
         private String employeeLicense;
+        private boolean crew;
+        final String employeeNameJSON = "name";
+        final String employeeLicenseJSON = "license";
+        final String employeeIsCrewJSON = "isCrew";
 
-        public void setEmployeeName(String name) {
-            // TODO: Logic for adding employee name to the apps local sqlite db
-            employeeName = name;
-        }
-
-        public void setEmployeeLicense(String license) {
-            // TODO: Logic for adding employee license to the apps local sqlite db
-            employeeLicense = license;
+        Employee () {
+            crew = false;
         }
 
         public String getEmployeeName() {
             return employeeName;
         }
 
+        public void setEmployeeName(String name) {
+            // TODO: Add employee name to the local sqlite db and try to retrieve license from name
+            employeeName = name;
+        }
+
         public String getEmployeeLicense() {
             return employeeLicense;
+        }
+
+        public void setEmployeeLicense(String license) {
+            // TODO: Add employee license to the local sqlite db and retrieve name from license
+            employeeLicense = license;
+        }
+
+        public boolean isCrew() {
+            return crew;
+        }
+
+        public void setCrew(boolean isCrew) {
+            //TODO: Add logic for setting data to sqlite db
+            this.crew = isCrew;
+        }
+
+        JSONObject toJSON() {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put(employeeNameJSON, employeeName);
+                if (employeeLicense != null)
+                    jsonObject.put(employeeLicenseJSON, employeeLicense);
+                jsonObject.put(employeeIsCrewJSON, crew);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject;
         }
     }
 }
