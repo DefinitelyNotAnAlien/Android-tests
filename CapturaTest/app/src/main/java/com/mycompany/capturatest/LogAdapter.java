@@ -28,13 +28,15 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ItemViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        holder.itemNo.setText(String.valueOf(logItems.get(position).logItemNo));
-        if (logItems.get(position).discrepancy != null)
-            holder.discrepancy.setText(logItems.get(position).discrepancy);
+        holder.itemNo.setText(String.valueOf(logItems.get(position).getLogItemNumber()));
+        String discDescription = logItems.get(position).getDiscrepancy().getDescription();
+        if (discDescription != null)
+            holder.discrepancy.setText(discDescription);
         else
             holder.discrepancy.setText(R.string.blank_item);
-        if (logItems.get(position).correctiveAction != null)
-            holder.correctiveAction.setText(logItems.get(position).correctiveAction);
+        String corrActDescription = logItems.get(position).getCorrectiveAction().getDescription();
+        if (corrActDescription != null)
+            holder.correctiveAction.setText(corrActDescription);
         else
             holder.correctiveAction.setText(R.string.blank_item);
     }

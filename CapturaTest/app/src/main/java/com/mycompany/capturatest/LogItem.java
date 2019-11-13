@@ -49,6 +49,18 @@ public class LogItem {
         correctiveAction = new CorrectiveAction();
     }
 
+    public int getLogItemNumber() {
+        return logItemNumber;
+    }
+
+    public Discrepancy getDiscrepancy() {
+        return discrepancy;
+    }
+
+    public CorrectiveAction getCorrectiveAction() {
+        return correctiveAction;
+    }
+
     private abstract class BaseLogItem {
         private String station;
         private String ataChapter;
@@ -57,12 +69,6 @@ public class LogItem {
         private String description;
         private boolean canceled;
         final String nullJSONString = "null";
-        final String stationJSON = "station";
-        final String ataJSON = "ataChapter";
-        final String dateReportedJSON = "date";
-        final String reportedByJSON = "reportedBy";
-        final String descriptionJSON = "description";
-        final String canceledJSON = "canceled";
 
         BaseLogItem() {
             reportedBy = new Employee();
@@ -97,7 +103,7 @@ public class LogItem {
             return reportedBy;
         }
 
-        public String getDescription() {
+        String getDescription() {
             return description;
         }
 
@@ -105,8 +111,8 @@ public class LogItem {
             this.description = description;
         }
 
-        boolean isCanceled() {
-            return canceled;
+        boolean isNotCanceled() {
+            return !canceled;
         }
 
         public void setCanceled(boolean cancel) {
@@ -114,9 +120,18 @@ public class LogItem {
         }
 
         public JSONObject toJSON() {
+            final String stationJSON = "station";
+            final String ataJSON = "ataChapter";
+            final String dateReportedJSON = "date";
+            final String reportedByJSON = "reportedBy";
+            final String descriptionJSON = "description";
+            final String canceledJSON = "canceled";
             JSONObject jsonObject = new JSONObject();
             try {
-                if (!canceled) {
+                if (canceled) {
+                    // If item is canceled we don't need to add anything to it
+                    jsonObject.put(canceledJSON, canceled);
+                } else {
                     jsonObject.put(stationJSON, station);
                     jsonObject.put(ataJSON, ataChapter != null ? ataChapter : nullJSONString);
 
@@ -129,8 +144,6 @@ public class LogItem {
 
                     jsonObject.put(reportedByJSON, reportedBy.toJSON());
                     jsonObject.put(descriptionJSON, description);
-                } else {
-                    jsonObject.put(canceledJSON, canceled);
                 }
             } catch (JSONException ex) {
                 ex.printStackTrace();
@@ -139,7 +152,7 @@ public class LogItem {
         }
     }
 
-    private class Discrepancy extends BaseLogItem {
+    protected class Discrepancy extends BaseLogItem {
         private String flightNumber;
         private String operationLog;
         final String flightNumberJSON = "flightNumber";
@@ -168,7 +181,7 @@ public class LogItem {
         @Override
         public JSONObject toJSON() {
             JSONObject jsonObject = super.toJSON();
-            if (!isCanceled()) {
+            if (isNotCanceled()) {
                 // If it's not canceled add the extra parameters
                 try {
                     jsonObject.put(flightNumberJSON, flightNumber != null ? flightNumber : nullJSONString);
@@ -181,7 +194,7 @@ public class LogItem {
         }
     }
 
-    private class CorrectiveAction extends BaseLogItem {
+    protected class CorrectiveAction extends BaseLogItem {
         private boolean deferred;
         private String deferralBasis;
         final String deferredJSON = "deferred";
@@ -203,7 +216,7 @@ public class LogItem {
         @Override
         public JSONObject toJSON() {
             JSONObject jsonObject = super.toJSON();
-            if (!isCanceled()) {
+            if (isNotCanceled()) {
                 // If it's not canceled add the extra parameters
                 try {
                     jsonObject.put(deferredJSON, deferred);
