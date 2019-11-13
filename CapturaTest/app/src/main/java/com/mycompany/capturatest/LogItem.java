@@ -1,64 +1,83 @@
 package com.mycompany.capturatest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class LogItem {
     /* Object representing an entry in a maintenance log
      * Attributes:
      *   - logItemNo (Integer): Number of entry in the maintenance log (max 3).
-     *   - discrepancy (BaseLogItem): Represents the discrepancy report in the maint. log.
+     *   - BaseLogItem (Class): Abstract item used to create discrepancies and corrective actions
      *       - station (String): IATA code of the station where the discrepancy was reported.
      *       - ataChapter (String): ATA Chapter corresponding to the discrepancy.
-     *       - isCrewReport (bool): Indicates if the report was made by a crew member.
      *       - reportedBy (Class): Object representing who reported the discrepancy.
      *           - name (String): Name of who reports the discrepancy.
      *           - license (String): Their license number.
      *       - dateReported (Date): Date in which the report was made.
+     *       - description (String): Description of the discrepancy.
+     *   - discrepancy (BaseLogItem): Represents the discrepancy report in the maint. log.
      *       - flightNo (String): Flight number of the flight in which the report was made.
      *       - operationLog (Integer): Folio of the corresponding operation log.
-     *       - description (String): Description of the discrepancy.
      *   - correctiveAction (BaseLogItem): Represents the corrective action report in log.
-     *       - station (String): IATA code of the station where the corrective action was performed.
-     *       - ataChapter (String): ATA Chapter corresponding to the corrective action.
-     *       - dateReported (Date): Date in which the corrective action was performed.
      *       - deferred (boolean): Indicates if the discrepancy was deferred.
      *       - deferralBasis (String): If it was deferred under which MEL Chapter.
-     *       - reportedBy (Class): Object representing who executed the corrective action.
-     *           - name (String): Name of the mechanic.
-     *           - license (String): Their license number.
-     *   - componentChange (Class): Object representing a component change.
-     *       - removedPartNumber (String): Removed component's part number
-     *       - removedSerialNumber (String): Removed component's serial number.
-     *       - installedPartNumber (String): Installed component's part number.
-     *       - installedSerialNumber (String): Installed component's serial number.
-     *   - componentsChanged (List<>): Containing component changes.
+     *   - componentsChanged (List<ComponentChange>): Containing component changes.
+     *       - ComponentChange (Class): Object representing a component change.
+     *           - componentRemoved (Boolean): A component was removed.
+     *           - removedPartNumber (String): Part number of the installed component.
+     *           - removedSerialNumber (String): Serial number of the installed component.
+     *           - componentInstalled (Boolean): A component was installed.
+     *           - installedPartNumber (String): Part number of the installed component.
+     *           - installedSerialNumber (String): Serial number of the installed component
      */
     private int logItemNumber;
     private Discrepancy discrepancy;
     private CorrectiveAction correctiveAction;
+    private boolean canceled;
+
+    final String logItemNumberJSON = "logItemNumber";
+    final String discrepancyJSON = "discrepancy";
+    final String correctiveActionJSON = "correctiveAction";
+    final String componentChangeJSON = "componentsChanged";
 
     LogItem(int logItemNo) {
         logItemNumber = logItemNo;
         discrepancy = new Discrepancy();
         correctiveAction = new CorrectiveAction();
+        canceled = false;
     }
 
-    public int getLogItemNumber() {
+    int getLogItemNumber() {
         return logItemNumber;
     }
 
-    public Discrepancy getDiscrepancy() {
+    Discrepancy getDiscrepancy() {
         return discrepancy;
     }
 
-    public CorrectiveAction getCorrectiveAction() {
+    CorrectiveAction getCorrectiveAction() {
         return correctiveAction;
+    }
+
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        if (canceled) {
+
+        } else {
+            jsonObject.put()
+        }
     }
 
     private abstract class BaseLogItem {
@@ -68,8 +87,13 @@ public class LogItem {
         private Employee reportedBy;
         private String description;
         private boolean canceled;
-        final String nullJSONString = "null";
 
+        final String stationJSON = "station";
+        final String ataJSON = "ataChapter";
+        final String dateReportedJSON = "date";
+        final String reportedByJSON = "reportedBy";
+        final String descriptionJSON = "description";
+        final String canceledJSON = "canceled";
         BaseLogItem() {
             reportedBy = new Employee();
             canceled = false;
@@ -120,12 +144,6 @@ public class LogItem {
         }
 
         public JSONObject toJSON() {
-            final String stationJSON = "station";
-            final String ataJSON = "ataChapter";
-            final String dateReportedJSON = "date";
-            final String reportedByJSON = "reportedBy";
-            final String descriptionJSON = "description";
-            final String canceledJSON = "canceled";
             JSONObject jsonObject = new JSONObject();
             try {
                 if (canceled) {
@@ -133,7 +151,8 @@ public class LogItem {
                     jsonObject.put(canceledJSON, canceled);
                 } else {
                     jsonObject.put(stationJSON, station);
-                    jsonObject.put(ataJSON, ataChapter != null ? ataChapter : nullJSONString);
+                    if (ataChapter != null)
+                        jsonObject.put(ataJSON, ataChapter);
 
                     // Convert date to a string
                     String pattern = "dd/MM/yyyy";
@@ -155,6 +174,7 @@ public class LogItem {
     protected class Discrepancy extends BaseLogItem {
         private String flightNumber;
         private String operationLog;
+
         final String flightNumberJSON = "flightNumber";
         final String operationLogJSON = "operationLog";
 
@@ -184,8 +204,10 @@ public class LogItem {
             if (isNotCanceled()) {
                 // If it's not canceled add the extra parameters
                 try {
-                    jsonObject.put(flightNumberJSON, flightNumber != null ? flightNumber : nullJSONString);
-                    jsonObject.put(operationLogJSON, operationLog != null ? operationLog : nullJSONString);
+                    if (flightNumber != null)
+                        jsonObject.put(flightNumberJSON, flightNumber);
+                    if (operationLog != null)
+                        jsonObject.put(operationLogJSON, operationLog);
                 } catch (JSONException ex) {
                     ex.printStackTrace();
                 }
@@ -197,6 +219,7 @@ public class LogItem {
     protected class CorrectiveAction extends BaseLogItem {
         private boolean deferred;
         private String deferralBasis;
+
         final String deferredJSON = "deferred";
         final String deferralBasisJSON = "deferralBasis";
 
@@ -280,6 +303,119 @@ public class LogItem {
                 e.printStackTrace();
             }
             return jsonObject;
+        }
+    }
+
+    protected class ComponentsChanged {
+        private List<ComponentChange> componentChangeList;
+
+        ComponentsChanged() {
+            componentChangeList = new ArrayList<>();
+        }
+
+        public int numberOfComponentChanges() {
+            return componentChangeList.size();
+        }
+
+        public JSONArray toJSON() {
+            JSONArray jsonArray = new JSONArray();
+            // Loop through all component changes, call their toJSON method and add it to the array
+            for (ComponentChange change : componentChangeList) {
+                jsonArray.put(change.toJSON());
+            }
+            return jsonArray;
+        }
+
+        protected class ComponentChange {
+            private boolean componentInstalled;
+            private String installedPartNumber;
+            private String installedSerialNumber;
+            private boolean componentRemoved;
+            private String removedPartNumber;
+            private String removedSerialNumber;
+
+            // Magic strings bad
+            final String partNumberJSON = "partNumber";
+            final String serialNumberJSON = "serialNumber";
+            final String componentInstalledJSON = "installed";
+            final String componentRemovedJSON = "removed";
+
+            public boolean isComponentInstalled() {
+                return componentInstalled;
+            }
+
+            public void setComponentInstalled(boolean componentInstalled) {
+                this.componentInstalled = componentInstalled;
+            }
+
+            public String getInstalledPartNumber() {
+                return installedPartNumber;
+            }
+
+            public void setInstalledPartNumber(String installedPartNumber) {
+                // Prevent from setting if no component was installed.
+                if (componentInstalled) this.installedPartNumber = installedPartNumber;
+            }
+
+            public String getInstalledSerialNumber() {
+                return installedSerialNumber;
+            }
+
+            public void setInstalledSerialNumber(String installedSerialNumber) {
+                // Prevent from setting if no component was installed.
+                if (componentInstalled) this.installedSerialNumber = installedSerialNumber;
+            }
+
+            public boolean isComponentRemoved() {
+                return componentRemoved;
+            }
+
+            public void setComponentRemoved(boolean componentRemoved) {
+                this.componentRemoved = componentRemoved;
+            }
+
+            public String getRemovedPartNumber() {
+                return removedPartNumber;
+            }
+
+            public void setRemovedPartNumber(String removedPartNumber) {
+                // Prevent from setting if no component was removed.
+                if (componentRemoved) this.removedPartNumber = removedPartNumber;
+            }
+
+            public String getRemovedSerialNumber() {
+                return removedSerialNumber;
+            }
+
+            public void setRemovedSerialNumber(String removedSerialNumber) {
+                // Prevent from setting if no component was removed.
+                if (componentRemoved) this.removedSerialNumber = removedSerialNumber;
+            }
+
+            JSONObject toJSON() {
+                JSONObject jsonObject = new JSONObject();
+                if (componentInstalled) {
+                    JSONObject installedObject = new JSONObject();
+                    try {
+                        installedObject.put(partNumberJSON, installedPartNumber);
+                        installedObject.put(serialNumberJSON, installedSerialNumber);
+                        jsonObject.put(componentInstalledJSON, installedObject);
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if (componentRemoved) {
+                    JSONObject removedObject = new JSONObject();
+                    try {
+                        removedObject.put(partNumberJSON, removedPartNumber);
+                        removedObject.put(serialNumberJSON, removedSerialNumber);
+                        jsonObject.put(componentRemovedJSON, removedObject);
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                return jsonObject;
+            }
         }
     }
 }
