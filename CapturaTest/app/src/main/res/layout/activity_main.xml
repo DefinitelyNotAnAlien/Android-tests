@@ -1,116 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainLayout"
+    android:id="@+id/scrollArea"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:scrollbars="none"
     tools:context=".MainActivity">
 
-    <TableLayout
+    <LinearLayout
+        android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingStart="5dp"
-        android:paddingTop="5dp"
-        android:paddingRight="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="5dp">
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
 
-        <!-- Select the aircraft's registration -->
-        <TableRow
-            android:id="@+id/aircraftSelectContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/aircraftLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_weight="1"
-                android:text="@string/aircraft_label"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <Spinner
-                android:id="@+id/aircraftSelector"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:layout_weight="1"
-                android:nextFocusDown="@id/folioInput"
-                android:spinnerMode="dialog"
-                android:prompt="@string/selector_title" />
-        </TableRow>
-
-        <!-- Enter the log folio -->
-
-        <TableRow
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-            <TextView
-                android:id="@+id/logFolioLabel"
-                android:layout_width="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp">
+
+            <!-- Select the aircraft's registration -->
+            <TableRow
+                android:id="@+id/aircraftSelectContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/aircraftLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:text="@string/aircraft_label"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/aircraftSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:nextFocusDown="@id/folioInput"
+                    android:prompt="@string/selector_title"
+                    android:spinnerMode="dialog" />
+            </TableRow>
+
+            <!-- Enter the log folio -->
+
+            <TableRow
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_weight="1"
-                android:text="@string/folio_input_label"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
-            <EditText
-                android:id="@+id/folioInput"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/logFolioLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:text="@string/folio_input_label"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/folioInput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:autofillHints="@string/log_folio_hint"
+                    android:ems="10"
+                    android:hint="@string/log_folio_hint"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    tools:ignore="UnusedAttribute" />
+            </TableRow>
+        </TableLayout>
+
+        <!-- Horizontal line separator
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/logItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="true"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            tools:itemCount="3"
+            tools:listitem="@layout/log_item" />
+
+        <LinearLayout
+            android:id="@+id/buttonLayout"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancelButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_column="2"
                 android:layout_weight="1"
-                android:autofillHints="@string/log_folio_hint"
-                android:ems="10"
-                android:hint="@string/log_folio_hint"
-                android:inputType="number"
-                android:maxLength="5"
-                tools:ignore="UnusedAttribute" />
-        </TableRow>
-    </TableLayout>
+                android:text="@string/cancel_button"
+                android:background="?attr/selectableItemBackground"/>
 
-    <!-- Horizontal line separator
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>-->
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="#90909090"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/logItems"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        tools:itemCount="3" />
-
-    <LinearLayout
-        android:id="@+id/buttonLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/cancelButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/cancel_button" />
-        <Button
-            android:id="@+id/okButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/ok_button" />
+            <Button
+                android:id="@+id/okButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ok_button"
+                android:background="?attr/selectableItemBackground"/>
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

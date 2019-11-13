@@ -50,14 +50,12 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ItemViewHolder> 
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
         TextView itemNo;
         TextView discrepancy;
         TextView correctiveAction;
 
         ItemViewHolder(View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cv);
             itemNo = itemView.findViewById(R.id.logItemNumber);
             discrepancy = itemView.findViewById(R.id.discrepancy);
             correctiveAction = itemView.findViewById(R.id.corrAction);
