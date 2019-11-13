@@ -1,73 +1,179 @@
 package com.mycompany.capturatest;
 
-import android.util.Pair;
-
-import androidx.annotation.Nullable;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Date;
 
 public class LogItem {
-    int logItemNo;
+    /* Object representing an entry in a maintenance log
+     * Attributes:
+     *   - logItemNo (Integer): Number of entry in the maintenance log (max 3).
+     *   - discrepancy (BaseLogItem): Represents the discrepancy report in the maint. log.
+     *       - station (String): IATA code of the station where the discrepancy was reported.
+     *       - ataChapter (String): ATA Chapter corresponding to the discrepancy.
+     *       - isCrewReport (bool): Indicates if the report was made by a crew member.
+     *       - reportedBy (Class): Object representing who reported the discrepancy.
+     *           - name (String): Name of who reports the discrepancy.
+     *           - license (String): Their license number.
+     *       - dateReported (Date): Date in which the report was made.
+     *       - flightNo (String): Flight number of the flight in which the report was made.
+     *       - operationLog (Integer): Folio of the corresponding operation log.
+     *       - description (String): Description of the discrepancy.
+     *   - correctiveAction (BaseLogItem): Represents the corrective action report in log.
+     *       - station (String): IATA code of the station where the corrective action was performed.
+     *       - ataChapter (String): ATA Chapter corresponding to the corrective action.
+     *       - dateReported (Date): Date in which the corrective action was performed.
+     *       - deferred (boolean): Indicates if the discrepancy was deferred.
+     *       - deferralBasis (String): If it was deferred under which MEL Chapter.
+     *       - reportedBy (Class): Object representing who executed the corrective action.
+     *           - name (String): Name of the mechanic.
+     *           - license (String): Their license number.
+     *   - componentChange (Class): Object representing a component change.
+     *       - removedPartNumber (String): Removed component's part number
+     *       - removedSerialNumber (String): Removed component's serial number.
+     *       - installedPartNumber (String): Installed component's part number.
+     *       - installedSerialNumber (String): Installed component's serial number.
+     *   - componentsChanged (List<>): Containing component changes.
+     */
+    private int logItemNumber;
+    private Discrepancy discrepancy;
+    private CorrectiveAction correctiveAction;
 
-    @Nullable String discrepancy;   // String detailing the reported discrepancy (disc)
-    @Nullable String stationDisc;   // IATA code of the station where the disc was logged
-    @Nullable String reportedBy;    // Name of who reported the disc
-    @Nullable Date dateReported;    // Date when the discrepancy was reported
-    @Nullable String ataDisc;       // ATA Chapter corresponding to the disc
-    @Nullable String flightNo;      // Flight no. of the flight in which the disc was reported
-    @Nullable String opFolio;       // Folio of the corresponding operation log
-
-    boolean deferred;               // Was the disc deferred?
-    @Nullable String deferralBasis; // Under what MEL item was the deferral accepted
-    String correctiveAction;        // String detailing the corrective action (corrAct) taken
-    String executedBy;              // Name of who executed the corrAct
-    String executedByLicense;       // License of who executed the corrAct
-    Date dateExecuted;              // Date when the corrective action was executed
-    @Nullable String ataCorrAct;    // ATA Chapter corresponding to the corrAct
-    Integer oilEng1;                // Oil added to the engine #1
-    Integer oilEng2;                // Oil added to the engine #2
-    Integer oilAPU;                 // Oil added to the APU
-
-    public LogItem(int logItem) {
-        logItemNo = logItem;
+    LogItem(int logItemNo) {
+        logItemNumber = logItemNo;
+        discrepancy = new Discrepancy();
+        correctiveAction = new CorrectiveAction();
     }
 
-    public JSONObject toJSON() {
-        JSONObject logItemObject = new JSONObject();    // Base json object, contains 2 sub-items
-        JSONObject discObject = new JSONObject();       // Subitem 1, contains data about disc
-        JSONObject corrActObject = new JSONObject();    // Subitem 2, contains data about corrAct
-        JSONObject techObject = new JSONObject();       // Technician that performed the task
-        JSONObject oilObject = new JSONObject();        // Oil added to the aircraft
+    private abstract class BaseLogItem {
+        private String station;
+        private String ataChapter;
+        private Date dateReported;
+        private Employee reportedBy;
+        private String description;
+        private boolean canceled;
 
-        try {
-            discObject.put("info", discrepancy);
-            discObject.put("station", stationDisc);
-            discObject.put("reported_by", reportedBy);
-            discObject.put("date", dateReported);
-            discObject.put("ATA", ataDisc);
-            discObject.put("flight_no", flightNo);
-            discObject.put("operation_log", opFolio);
-            logItemObject.put("discrepancy", discObject);
-
-            corrActObject.put("info", correctiveAction);
-            corrActObject.put("deferred", deferred);
-            corrActObject.put("deferral_basis", deferralBasis);
-            techObject.put("name", executedBy);
-            techObject.put("license", executedByLicense);
-            corrActObject.put("executed_by", techObject);
-            corrActObject.put("date", dateExecuted);
-            corrActObject.put("ATA", ataCorrAct);
-            oilObject.put("eng1", oilEng1);
-            oilObject.put("eng2", oilEng2);
-            oilObject.put("apu", oilAPU);
-            corrActObject.put("oil", oilObject);
-            logItemObject.put("corrective_action", corrActObject);
-        } catch (JSONException ex) {
-            ex.printStackTrace();
+        BaseLogItem() {
+            reportedBy = new Employee();
+            canceled = false;
         }
-        return logItemObject;
+
+        public void setStation(String station) {
+            this.station = station;
+        }
+
+        public String getStation() {
+            return station;
+        }
+
+        public String getAtaChapter() {
+            return ataChapter;
+        }
+
+        public void setAtaChapter(String ataChapter) {
+            this.ataChapter = ataChapter;
+        }
+
+        public Date getDate() {
+            return dateReported;
+        }
+
+        public void setDate(Date date) {
+            dateReported = date;
+        }
+
+        public Employee getEmployee() {
+            return reportedBy;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public boolean isCanceled() {
+            return canceled;
+        }
+
+        public void setCanceled(boolean cancel) {
+            canceled = cancel;
+        }
+    }
+
+    private class Discrepancy extends BaseLogItem {
+        private boolean crewReport;
+        private String flightNumber;
+        private String operationLog;
+
+        Discrepancy() {
+            super();
+            crewReport = false;
+        }
+
+        public boolean isCrewReport() {
+            return crewReport;
+        }
+
+        public void setCrewReport(boolean crewReport) {
+            this.crewReport = crewReport;
+        }
+
+        public String getFlightNumber() {
+            return flightNumber;
+        }
+
+        public void setFlightNumber(String flightNumber) {
+            this.flightNumber = flightNumber;
+        }
+
+        public String getOperationLog() {
+            return operationLog;
+        }
+
+        public void setOperationLog(String operationLog) {
+            this.operationLog = operationLog;
+        }
+    }
+
+    private class CorrectiveAction extends BaseLogItem {
+        private boolean deferred;
+        private String deferralBasis;
+
+        CorrectiveAction() {
+            super();
+            deferred = false;
+        }
+
+        public boolean isDeferred() {
+            return deferred;
+        }
+
+        public void setDeferred(boolean deferred) {
+            this.deferred = deferred;
+        }
+    }
+
+    protected class Employee {
+        private String employeeName;
+        private String employeeLicense;
+
+        public void setEmployeeName(String name) {
+            // TODO: Logic for adding employee name to the apps local sqlite db
+            employeeName = name;
+        }
+
+        public void setEmployeeLicense(String license) {
+            // TODO: Logic for adding employee license to the apps local sqlite db
+            employeeLicense = license;
+        }
+
+        public String getEmployeeName() {
+            return employeeName;
+        }
+
+        public String getEmployeeLicense() {
+            return employeeLicense;
+        }
     }
 }
