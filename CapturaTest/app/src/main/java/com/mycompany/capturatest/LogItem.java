@@ -68,6 +68,10 @@ public class LogItem {
         this.canceled = canceled;
     }
 
+    public boolean isCanceled() {
+        return !canceled;
+    }
+
     public JSONObject toJSON() {
         // Magic strings bad
         final String discrepancyJSON = "discrepancy";
@@ -146,7 +150,7 @@ public class LogItem {
             this.description = description;
         }
 
-        boolean isNotCanceled() {
+        boolean isCanceled() {
             return !canceled;
         }
 
@@ -161,8 +165,10 @@ public class LogItem {
                     // If item is canceled we don't need to add anything to it
                     jsonObject.put(canceledJSON, true);
                 } else {
+                    // Otherwise add all the data we have
                     jsonObject.put(stationJSON, station);
                     if (ataChapter != null)
+                        // No need to add the ATA Chapter if it's null
                         jsonObject.put(ataJSON, ataChapter);
 
                     // Convert date to a string
@@ -212,7 +218,7 @@ public class LogItem {
         @Override
         public JSONObject toJSON() {
             JSONObject jsonObject = super.toJSON();
-            if (isNotCanceled()) {
+            if (!isCanceled()) {
                 // If it's not canceled add the extra parameters
                 try {
                     if (flightNumber != null)
@@ -250,7 +256,7 @@ public class LogItem {
         @Override
         public JSONObject toJSON() {
             JSONObject jsonObject = super.toJSON();
-            if (isNotCanceled()) {
+            if (!isCanceled()) {
                 // If it's not canceled add the extra parameters
                 try {
                     jsonObject.put(deferredJSON, deferred);

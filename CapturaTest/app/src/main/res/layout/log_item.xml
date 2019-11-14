@@ -6,12 +6,13 @@
     android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
+    <!-- Represents a maintenance log entry in list view -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <!-- Represents a maintenance log entry in list view -->
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <LinearLayout
             android:id="@+id/logItemContainer"
