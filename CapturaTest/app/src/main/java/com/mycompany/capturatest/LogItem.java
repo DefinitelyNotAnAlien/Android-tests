@@ -41,17 +41,14 @@ public class LogItem {
     private int logItemNumber;
     private Discrepancy discrepancy;
     private CorrectiveAction correctiveAction;
+    private ComponentsChanged componentsChanged;
     private boolean canceled;
-
-    final String logItemNumberJSON = "logItemNumber";
-    final String discrepancyJSON = "discrepancy";
-    final String correctiveActionJSON = "correctiveAction";
-    final String componentChangeJSON = "componentsChanged";
 
     LogItem(int logItemNo) {
         logItemNumber = logItemNo;
         discrepancy = new Discrepancy();
         correctiveAction = new CorrectiveAction();
+        componentsChanged = new ComponentsChanged();
         canceled = false;
     }
 
@@ -72,12 +69,26 @@ public class LogItem {
     }
 
     public JSONObject toJSON() {
+        // Magic strings bad
+        final String discrepancyJSON = "discrepancy";
+        final String correctiveActionJSON = "correctiveAction";
+        final String componentsChangedJSON = "componentsChanged";
+        final String canceledJSON = "canceledItem";
         JSONObject jsonObject = new JSONObject();
-        if (canceled) {
-
-        } else {
-            jsonObject.put()
+        try {
+            if (canceled) {
+                // If the whole item is cancelled only add this
+                jsonObject.put(canceledJSON, true);
+            } else {
+                jsonObject.put(discrepancyJSON, discrepancy);
+                jsonObject.put(correctiveActionJSON, correctiveAction);
+                if (componentsChanged.numberOfComponentChanges() > 0)
+                    jsonObject.put(componentsChangedJSON, componentsChanged);
+            }
+        } catch(JSONException ex) {
+            ex.printStackTrace();
         }
+        return jsonObject;
     }
 
     private abstract class BaseLogItem {
@@ -148,7 +159,7 @@ public class LogItem {
             try {
                 if (canceled) {
                     // If item is canceled we don't need to add anything to it
-                    jsonObject.put(canceledJSON, canceled);
+                    jsonObject.put(canceledJSON, true);
                 } else {
                     jsonObject.put(stationJSON, station);
                     if (ataChapter != null)
@@ -334,7 +345,6 @@ public class LogItem {
             private String removedPartNumber;
             private String removedSerialNumber;
 
-            // Magic strings bad
             final String partNumberJSON = "partNumber";
             final String serialNumberJSON = "serialNumber";
             final String componentInstalledJSON = "installed";
